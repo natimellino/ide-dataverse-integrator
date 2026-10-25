@@ -1,0 +1,115 @@
+{
+  "id": "8a608e1856295843589b827e60d56c94e96145e6",
+  "modified": "2026-09-30T12:00:01",
+  "language": "ENG",
+  "other_languages": [],
+  "character_set": "",
+  "resource_type": "dataset",
+  "metadata_standard_name": "",
+  "metadata_standard_version": "",
+  "title": "HUELLA URBANA CSK 2013 HH COHERENCIA 0.50 / PROMEDIO - 15 DB",
+  "resource_alt_title": "",
+  "description": "",
+  "purpose": "",
+  "keywords": [
+    "GeoTIFF",
+    "HU_CSK_20130619-20130627_HI_SLC_X_HH_COH-050_PROM-15_MSK_P94F5",
+    "WCS"
+  ],
+  "status": "",
+  "topic_category": "",
+  "resource_language": "",
+  "resource_edition": "",
+  "overview_url": "",
+  "supplemental_information": "",
+  "resource_creation_date": "",
+  "resource_publication_date": "",
+  "resource_revision_date": "",
+  "resource_identifier": "",
+  "crs": [
+    "CRS84",
+    "EPSG:22185"
+  ],
+  "spatial": {
+    "wkt": "POLYGON((-60.79834871949627 -32.86862224891954,-60.61095493980156 -32.86862224891954,-60.61095493980156 -33.0394003675495,-60.79834871949627 -33.0394003675495,-60.79834871949627 -32.86862224891954))",
+    "geojson": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -60.79834871949627,
+            -32.86862224891954
+          ],
+          [
+            -60.61095493980156,
+            -32.86862224891954
+          ],
+          [
+            -60.61095493980156,
+            -33.0394003675495
+          ],
+          [
+            -60.79834871949627,
+            -33.0394003675495
+          ],
+          [
+            -60.79834871949627,
+            -32.86862224891954
+          ]
+        ]
+      ]
+    },
+    "west_longitude": "-60.79834871949627",
+    "east_longitude": "-60.61095493980156",
+    "north_latitude": "-32.86862224891954",
+    "south_latitude": "-33.0394003675495"
+  },
+  "temporal_extent_begin": "",
+  "temporal_extent_end": "",
+  "resolution_scale_denominator": "",
+  "resolution_distance": "",
+  "maintenance_frequency": "",
+  "distribution_format_name": "",
+  "distribution_format_version": "",
+  "license": "",
+  "use_limitation": "",
+  "access_constraints": "",
+  "lineage": "",
+  "specification_conformance": [],
+  "process_steps": [],
+  "contact": {
+    "organization": "Universidad Nacional de Rosario",
+    "role": "pointOfContact",
+    "website": "https://www.unr.edu.ar",
+    "address": {
+      "street": "Maipú 1065",
+      "city": "Rosario",
+      "state": "Santa Fe",
+      "postal_code": "2000",
+      "country": "Argentina"
+    }
+  },
+  "author_name": "",
+  "links": [
+    {
+      "url": "https://200.3.123.110/geoserver/ASR/ows?SERVICE=WMS&",
+      "title": "HU_CSK_20130619-20130627_HI_SLC_X_HH_COH-050_PROM-15_MSK_P94F5",
+      "description": "HUELLA URBANA CSK 2013 HH COHERENCIA 0.50 / PROMEDIO - 15 DB"
+    },
+    {
+      "url": "http://200.3.123.110/NODO_IDE_UNR/FCEIA/AGRIMENSURA/ASR/METADATOS/10.57715_UNR_EXIVRO_SNVWI4.pdf",
+      "title": "HU_CSK_20130619-20130627_HI_SLC_X_HH_COH-050_PROM-15_MSK_P94F5 (MetadataURL)",
+      "description": ""
+    },
+    {
+      "url": "https://200.3.123.110/geoserver/ASR/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=HU_CSK_20130619-20130627_HI_SLC_X_HH_COH-050_PROM-15_MSK_P94F5",
+      "title": "CSK_050_-15_AREA_EDIFICADA (LegendURL)",
+      "description": ""
+    }
+  ],
+  "parent_geonetwork_uuid": null,
+  "is_parent": false,
+  "geoserver_layer_name": null,
+  "checksum_md5": null,
+  "doi": null
+}

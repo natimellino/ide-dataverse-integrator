@@ -1,0 +1,32 @@
+# Credenciales
+.env
+.env.*
+!.env.example
+!tests/.env.test
+
+# Entornos virtuales
+env/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Caches y herramientas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Editores
+.vscode/
+.idea/
+.claude/
+
+# Datos locales
+tests/integration/

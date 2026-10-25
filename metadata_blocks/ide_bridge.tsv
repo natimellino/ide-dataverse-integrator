@@ -1,0 +1,13 @@
+#metadataBlock	name	dataverseAlias	displayName	blockURI
+	ideBridge		IDE-Dataverse Bridge	https://ide.unr.edu.ar/schema/bridge/
+#datasetField	name	title	description	watermark	fieldType	displayOrder	displayFormat	advancedSearchField	allowControlledVocabulary	allowmultiples	facetable	displayoncreate	required	parent	metadatablock_id
+	geonetworkUuid	GeoNetwork UUID	UUID del registro original en GeoNetwork. Clave de sincronización.		text	0		TRUE	FALSE	FALSE	TRUE	FALSE	FALSE		ideBridge
+	parentGeonetworkUuid	Parent GeoNetwork UUID	UUID del registro padre al que pertenece esta capa en GeoNetwork.		text	1		TRUE	FALSE	FALSE	TRUE	FALSE	FALSE		ideBridge
+	geoserverLayerName	GeoServer Layer Name	Nombre calificado de la capa en GeoServer (workspace:layer).		text	2		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	checksumMd5	Checksum MD5	Hash MD5 del archivo de datos para control de integridad.		text	3		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	modified	Fecha de última actualización	Fecha de la última actualización del metadato en GeoNetwork.		text	4		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	status	Estado del recurso	Estado del recurso según el Perfil IDE (ej: completed, onGoing).		text	5		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	purpose	Propósito	Propósito o justificación de la creación del recurso.		textbox	6		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	resolutionScaleDenominator	Escala	Denominador de la escala equivalente (ej: 50000 para una escala 1:50000).		text	7		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	maintenanceFrequency	Frecuencia de mantenimiento	Frecuencia de actualización del recurso (ej: asNeeded, annually).		text	8		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	lineage	Linaje	Descripción del linaje o genealogía de los datos.		textbox	9		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge

@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ide-dataverse-integrator"
+version = "0.1.0"
+description = "Pipeline y CLI de integración entre GeoNetwork, GeoServer y Dataverse"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.7",
+    "pydantic>=2.7.1,<3",
+    "pydantic-settings>=2.2.0",
+    "requests>=2.32.3",
+    "httpx>=0.28",
+    "lxml>=5.2.2",
+    "rdflib>=7.0",
+    "easyDataverse==0.4.4",
+    "dvuploader>=0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.2",
+    "pytest-mock>=3.14.0",
+    "pytest-cov>=5.0.0",
+    "responses>=0.25.3",
+    "mypy>=1.10.0",
+    "types-requests>=2.32.0.20240622",
+    "ruff>=0.5.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+idetool = "ide_dataverse_integrator.cli:cli"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
