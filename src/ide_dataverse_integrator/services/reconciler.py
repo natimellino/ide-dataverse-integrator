@@ -13,11 +13,10 @@ def reconcile(
     """Concilia UUIDs descubiertos en GeoNetwork contra Dataverse.
 
     Para cada UUID descubierto, busca si ya existe un dataset en Dataverse
-    con ese geonetwork_uuid en el bloque ideBridge. Los clasifica en
-    to_create (nuevos) o existing (ya publicados).
+    con ese geonetwork_uuid. Los clasifica en to_create o existing.
 
-    La detección de huérfanos requiere descubrimiento padre→hijas (M2);
-    hasta entonces se devuelve vacía.
+    La detección de huérfanos requiere tener parent records implementados
+    en Geonetwork, hasta entonces se devuelve vacía.
     """
     to_create: list[str] = []
     existing: dict[str, str] = {}

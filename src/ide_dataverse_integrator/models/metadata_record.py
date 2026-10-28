@@ -121,7 +121,6 @@ class MetadataRecord(BaseModel):
     metadata_standard_name: str = ""
     metadata_standard_version: str = ""
 
-    # Contenido descriptivo
     # Perfil IDE: título del recurso
     title: str
     resource_alt_title: str = ""
@@ -141,14 +140,12 @@ class MetadataRecord(BaseModel):
     # Perfil IDE: información adicional
     supplemental_information: str = ""
 
-    # Fechas del recurso
     # Perfil IDE: fecha de creación del recurso
     resource_creation_date: str = ""
     # Perfil IDE: fecha de publicación del recurso
     resource_publication_date: str = ""
     resource_revision_date: str = ""
 
-    # Identificación del recurso
     # Perfil IDE: ID Metadato
     resource_identifier: str = ""
 
@@ -164,7 +161,6 @@ class MetadataRecord(BaseModel):
     resolution_scale_denominator: str = ""
     resolution_distance: str = ""
 
-    # Mantenimiento
     # Perfil IDE: frecuencia de mantenimiento
     maintenance_frequency: str = ""
 
@@ -177,19 +173,17 @@ class MetadataRecord(BaseModel):
     use_limitation: str = ""
     access_constraints: str = ""
 
-    # Calidad
     # Perfil IDE: Linaje
     lineage: str = ""
     specification_conformance: list[SpecificationConformance] = Field(default_factory=list)
     process_steps: list[str] = Field(default_factory=list)
 
-    # Contacto y enlaces
     # Perfil IDE: punto de contacto
     contact: Contact | None = None
     author_name: str = ""
     links: list[Link] = Field(default_factory=list)
 
-    # Campos operativos para el puente GeoNetwork ↔ Dataverse
+    # Campos operativos para el puente GeoNetwork <-> Dataverse
     parent_geonetwork_uuid: str | None = None
     is_parent: bool = False
     geoserver_layer_name: str | None = None

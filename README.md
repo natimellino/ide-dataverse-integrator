@@ -1,6 +1,6 @@
 # ide-dataverse-integrator
 
-CLI que publica en Dataverse los metadatos de registros de GeoNetwork.
+CLI que publica y sincroniza en Dataverse los metadatos de registros de GeoNetwork. El desarrollo de esta herramienta forma parte de la tesina final de grado para la carrera de Licenciatura en Ciencias de la Computación y su implementación está atada a las necesidades específicas que surgieron en el contexto del trabajo en cuestión.
 
 ## Setup
 

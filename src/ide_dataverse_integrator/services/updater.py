@@ -1,14 +1,11 @@
 """
-Servicio de actualización selectiva en Dataverse (M5).
+Servicio de actualización selectiva en Dataverse.
 
-Compara dos ``MetadataRecord`` (uno de GeoNetwork y otro de Dataverse) y
-produce un ``MetadataDiff`` con los campos que difieren. Después,
-``apply_diff_to_dataset`` aplica únicamente esos campos sobre un ``Dataset``.
+Compara dos `MetadataRecord` (uno de GeoNetwork y otro de Dataverse) y
+produce un `MetadataDiff` con los campos que difieren. Después,
+actualiza únicamente esos campos en el Dataset de Dataverse.
 
-Las piezas están diseñadas para ser reusables en el camino inverso (DV→GN):
-``diff_records`` es simétrico (basta invertir ``source`` y ``target``). Las
-funciones ``_apply_*`` son específicas del flujo GN→DV; para el flujo inverso
-se escribirían sus equivalentes contra el patch de GeoNetwork.
+Las piezas están diseñadas para ser reusables en el camino inverso (DV->GN).
 """
 
 import logging
@@ -185,16 +182,13 @@ def _apply_checksum_md5(dataset: Dataset, new_value: str) -> None:
     dataset.ideBridge.checksum_md5 = new_value
 
 
-# --- Sync groups: tabla única que acopla extract + apply ----------------------
-
-
 @dataclass(frozen=True)
 class _SyncGroup:
-    """Describe un campo lógico que se sincroniza GN↔DV.
+    """Describe un campo lógico que se sincroniza GN<->DV.
 
-    ``extract`` normaliza el valor del record para que la comparación sea
-    semántica; ``apply`` lo escribe en el Dataset. Un sync group puede
-    agrupar varios campos del record (ej. ``temporal_extent`` cubre begin+end).
+    `extract` normaliza el valor del record para que la comparación sea
+    semántica; `apply` lo escribe en el Dataset. Un sync group puede
+    agrupar varios campos del record (ej. `temporal_extent` cubre begin+end).
     """
 
     key: str
@@ -264,9 +258,6 @@ _SYNC_GROUPS: list[_SyncGroup] = [
         lambda r: r.geoserver_layer_name or "",
         _wrap(_apply_geoserver_layer),
     ),
-    # checksum_md5 se compara aparte (ver diff_layer_checksum): sólo entra al
-    # diff cuando la capa se volvió a descargar y recalcular, para no pisar el
-    # valor guardado en las corridas que no tocan la capa.
 ]
 
 
@@ -277,16 +268,10 @@ _CHECKSUM_GROUP = _SyncGroup(
 )
 
 
-# --- Interface publica
-
-
 def diff_records(source: MetadataRecord, target: MetadataRecord) -> MetadataDiff:
     """Compara dos records y devuelve los sync groups cuyo valor difiere.
 
-    Es direccionalmente simétrico; la convención en el flujo GN→DV es
-    ``source=gn_record`` y ``target=dv_record``, lo que deja
-    ``changed_fields[n] = (dv_value, gn_value)``. Para el flujo DV→GN se invierten
-    los argumentos.
+    Es direccionalmente simétrico. Para el flujo DV→GN se invierten los argumentos.
     """
     changed: dict[str, tuple[Any, Any]] = {}
     for group in _SYNC_GROUPS:
@@ -300,11 +285,7 @@ def diff_records(source: MetadataRecord, target: MetadataRecord) -> MetadataDiff
 def diff_layer_checksum(
     source: MetadataRecord, target: MetadataRecord
 ) -> tuple[str, str] | None:
-    """Compara el md5 recalculado de la capa contra el guardado en Dataverse.
-
-    Devuelve ``(dv_value, gn_value)`` si el checksum cambió, o ``None``
-    en cualquier otro caso.
-    """
+    """Compara el md5 recalculado de la capa contra el guardado en Dataverse."""
     if source.checksum_md5 is None:
         return None
     current = target.checksum_md5 or ""

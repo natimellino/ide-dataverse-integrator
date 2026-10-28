@@ -30,8 +30,7 @@ def cli(verbose):
 def sync_command(uuid, sync_deletions, update_existing, dry_run):
     """Publica en Dataverse el record de GeoNetwork indicado.
 
-    El nombre de la capa en GeoServer se autodescubre del XML del record
-    (campos `gmd:onLine` con protocolo OGC).
+    El nombre de la capa en GeoServer se autodescubre del XML del record.
     """
     sync(uuid, sync_deletions, dry_run, update_existing=update_existing)
 

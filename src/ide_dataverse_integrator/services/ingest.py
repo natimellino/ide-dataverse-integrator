@@ -36,13 +36,10 @@ logger = logging.getLogger(__name__)
 def fetch_metadata_record(gn: GeonetworkClient, uuid: str) -> MetadataRecord:
     """
     Obtiene un record de GeoNetwork y lo convierte a MetadataRecord.
-
-    Los metadatos principales salen del formatter GeoDCAT-AP; los que este
-    no exporta se completan con el XML ISO 19139. El XML también aporta
-    `geoserver_layer_name`, autodescubierto desde los `gmd:onLine` con
-    protocolo OGC.
     """
     record = parse_geodcat_to_model(gn.get_record(uuid))
+    # Priorizamos extraer de GeoDCAT-AP porque es más simple pero
+    # completamos con XML todos los metadatos que falten.
     extras = parse_iso19139_extras(gn.get_record(uuid, format="xml"))
     return merge_iso19139_extras(record, extras)
 
@@ -92,11 +89,7 @@ def _diff_existing(
     dv_record: MetadataRecord,
     gn_record: MetadataRecord,
 ) -> MetadataDiff:
-    """Calcula el diff GN→DV de un existente, incluyendo el checksum de la capa.
-
-    Asume que ``gn_record.checksum_md5`` ya fue recalculado (o quedó en ``None``
-    si la capa no se descargó en esta corrida).
-    """
+    """Calcula el diff GN->DV, incluyendo el checksum de la capa."""
     source = normalize_for_dataverse(gn_record)
     diff = diff_records(source, dv_record)
     checksum_change = diff_layer_checksum(source, dv_record)
@@ -121,11 +114,7 @@ def update_existing_dataset(
     gn_record: MetadataRecord,
     geoserver_client: GeoServerClient | None = None,
 ) -> MetadataDiff:
-    """Actualiza un dataset existente en Dataverse si hay campos que difieren.
-
-    Si el record trae capa, la descarga y recalcula su md5 y
-    actualiza la capa si es necesario.
-    """
+    """Actualiza un dataset existente en Dataverse si hay campos que difieren."""
     dataset = dv.load_dataset(pid)
     dv_record = dv_to_metadata_record(dataset)
     layer_name = gn_record.geoserver_layer_name
@@ -177,8 +166,7 @@ def _print_plan(
 ):
     """Imprime el plan de conciliación en dry-run.
 
-    Si ``diffs`` está presente, también muestra qué campos se actualizarían
-    para cada dataset existente (modo ``--update-existing --dry-run``).
+    Si `diffs` está presente, también muestra qué campos se actualizarían.
     """
     click.secho("=== Plan de conciliación ===", bold=True)
 
@@ -242,7 +230,8 @@ def sync(
 
     record = fetch_metadata_record(gn, uuid)
 
-    # Por ahora cada UUID se trata como capa única (M2 bloqueado)
+    # Por ahora cada UUID se trata como capa única (no tenemos parent records
+    # implementados en Geonetwork)
     discovered_uuids = [uuid]
     plan = reconcile(discovered_uuids, dv)
 
@@ -256,8 +245,8 @@ def sync(
         _print_plan(plan, {uuid: record}, diffs)
         return
 
-    # El cliente de GeoServer sólo se instancia si algún record (a crear o a
-    # actualizar) trae un nombre de capa autodescubierto.
+    # El cliente de GeoServer sólo se instancia si algún record
+    # tiene una capa.
     geoserver_client: GeoServerClient | None = None
 
     for new_uuid in plan.to_create:

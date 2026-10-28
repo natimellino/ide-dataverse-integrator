@@ -203,8 +203,7 @@ def _extract_geoserver_layer_name(root) -> str | None:
     """Resuelve el nombre calificado (workspace:layer) desde los onLine OGC del XML.
 
     Recorre los `gmd:CI_OnlineResource` de `distributionInfo` y toma el primero
-    cuyo `gmd:protocol` indique un servicio OGC. El nombre bare sale de
-    `gmd:name` y el workspace del path de la URL de GeoServer.
+    cuyo `gmd:protocol` indique un servicio OGC.
     """
     online_resources = root.findall(
         ".//gmd:distributionInfo/gmd:MD_Distribution"

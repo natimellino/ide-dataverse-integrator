@@ -80,7 +80,7 @@ class DataverseClient:
 
         Args:
             pid: Persistent identifier del dataset (e.g. "doi:10.70122/FK2/ABCDEF").
-            version: Versión a descargar. Por default ``"latest"``
+            version: Versión a descargar.
             filedir: Directorio local donde descargar los archivos. Si es None,
                      se cargan sólo los metadatos y se omite la descarga de files.
 
@@ -120,8 +120,7 @@ class DataverseClient:
         Args:
             pid: Persistent identifier del dataset destino.
             file_path: Ruta al archivo local con el contenido nuevo.
-            dv_dir: Directorio del archivo dentro del dataset (debe coincidir con
-                    el usado al subirlo).
+            dv_dir: Directorio del archivo dentro del dataset.
         """
         new_file = File(filepath=file_path, directoryLabel=dv_dir)
         DVUploader(files=[new_file]).upload(

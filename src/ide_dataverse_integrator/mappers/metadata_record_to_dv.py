@@ -131,8 +131,7 @@ def _get_bridge_block(dataset: Dataset):
 
 
 def fill_bridge_metadata(dataset: Dataset, metadata: MetadataRecord):
-    """Inyecta en el bloque custom la trazabilidad GeoNetwork ↔ Dataverse y los
-    campos del Perfil IDE que no tienen equivalente en citation/geospatial."""
+    """Inyecta en el bloque los campos custom que se extendieron"""
     bridge = _get_bridge_block(dataset)
 
     bridge.geonetwork_uuid = metadata.id

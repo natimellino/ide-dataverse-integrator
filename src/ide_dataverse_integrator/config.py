@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     dataverse_api_token: SecretStr
     dataverse_parent_alias: str = "root"
     # Fallbacks para campos obligatorios de Dataverse
-    # Punto de contacto por defecto (el área de sensores remotos suele ser el mismo).
     dataverse_default_contact_name: str = ""
     dataverse_default_contact_email: str = "example@example.com"
     dataverse_default_subject: list[str] = ["Other"]
@@ -29,8 +28,7 @@ class Settings(BaseSettings):
     # Formato de descarga para capas raster (WCS). Default GeoTIFF.
     geoserver_wcs_format: str = "image/tiff"
     geoserver_wcs_extension: str = ".tif"
-    # Formato de descarga para capas vectoriales (WFS). Default GeoJSON;
-    # cambiar la dupla a "SHAPE-ZIP"/".zip" o "GML3"/".gml" para variar el formato.
+    # Formato de descarga para capas vectoriales (WFS). Default GeoJSON.
     geoserver_wfs_format: str = "application/json"
     geoserver_wfs_extension: str = ".geojson"
     # Literales que devuelve la REST API de GeoServer para el tipo de capa.
