@@ -146,6 +146,14 @@ class TestDiffRecords:
         assert "author" in diff.changed_fields
         assert diff.changed_fields["author"] == ("UNR con typo", "UNR")
 
+    def test_reference_system_change_detected(self):
+        gn = _record(crs=["CRS:84", "EPSG:22185"])
+        dv = _record(crs=["CRS:84"])
+
+        diff = diff_records(gn, dv)
+
+        assert diff.changed_fields["crs"] == (["CRS:84"], ["CRS:84", "EPSG:22185"])
+
     def test_bridge_fields_normalize_none_to_empty(self):
         """parent_geonetwork_uuid=None en ambos no debe reportar cambio."""
         gn = _record(parent_geonetwork_uuid=None)
@@ -351,3 +359,11 @@ class TestApplyDiffToDataset:
         assert dataset.ideBridge.resolution_scale_denominator == "50000"
         assert dataset.ideBridge.maintenance_frequency == "asNeeded"
         assert dataset.ideBridge.lineage == "Derivado de COSMO-SkyMed"
+
+    def test_reference_system_assigned_directly(self, cfg):
+        dataset = self._dataset()
+        diff = MetadataDiff(changed_fields={"crs": ([], ["EPSG:22185"])})
+
+        apply_diff_to_dataset(diff, dataset, cfg)
+
+        assert dataset.ideBridge.reference_system == ["EPSG:22185"]

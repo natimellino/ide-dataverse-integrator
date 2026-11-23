@@ -432,7 +432,11 @@ def parse_iso19139_extras(xml_text: str) -> dict:
     return result
 
 
-def merge_iso19139_extras(record: MetadataRecord, extras: dict) -> MetadataRecord:
+def merge_iso19139_extras(
+    record: MetadataRecord,
+    extras: dict,
+    record_class: type[MetadataRecord] = MetadataRecord,
+) -> MetadataRecord:
     """
     Completa un MetadataRecord con los campos extraídos del XML ISO 19139.
 
@@ -442,6 +446,8 @@ def merge_iso19139_extras(record: MetadataRecord, extras: dict) -> MetadataRecor
     Args:
         record: MetadataRecord obtenido del formatter GeoDCAT-AP.
         extras: Diccionario devuelto por `parse_iso19139_extras`.
+        record_class: Clase del record resultante. Los campos exclusivos de otra
+            clase se descartan.
 
     Returns:
         MetadataRecord: nuevo record con los campos combinados.
@@ -453,4 +459,4 @@ def merge_iso19139_extras(record: MetadataRecord, extras: dict) -> MetadataRecor
             continue
         if key in xml_preferred_fields or not merged.get(key):
             merged[key] = value
-    return MetadataRecord.model_validate(merged)
+    return record_class.model_validate(merged)

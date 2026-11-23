@@ -1,6 +1,12 @@
 import pytest
 
-from ide_dataverse_integrator.models.metadata_record import SpatialInfo
+from ide_dataverse_integrator.models.metadata_record import (
+    MetadataRecord,
+    RasterRecord,
+    SpatialInfo,
+    VectorRecord,
+    ontology_properties,
+)
 
 POLYGON_COORDS = [
     [-60.79, -32.86],
@@ -66,3 +72,44 @@ def test_explicit_bbox_is_not_overwritten():
 
 def test_without_geometry_bbox_is_empty():
     assert _bbox(SpatialInfo()) == (None, None, None, None)
+
+
+class TestOntologyAlignment:
+    def test_classes_declare_their_ontology_class(self):
+        assert MetadataRecord.ontology_class == "unr:CapaIDE"
+        assert RasterRecord.ontology_class == "unr:CapaRaster"
+        assert VectorRecord.ontology_class == "unr:CapaVectorial"
+
+    def test_layer_classes_specialize_the_base_record(self):
+        assert issubclass(RasterRecord, MetadataRecord)
+        assert issubclass(VectorRecord, MetadataRecord)
+
+    def test_domain_fields_are_annotated(self):
+        properties = ontology_properties(MetadataRecord)
+
+        assert properties["title"] == "dct:title"
+        assert properties["lineage"] == "dct:provenance"
+        assert properties["resolution_scale_denominator"] == "unr:ideEscala"
+
+    def test_sync_fields_are_not_annotated(self):
+        properties = ontology_properties(MetadataRecord)
+
+        assert "geoserver_layer_name" not in properties
+        assert "checksum_md5" not in properties
+        assert "parent_geonetwork_uuid" not in properties
+
+    def test_subclasses_inherit_annotations(self):
+        base_properties = ontology_properties(MetadataRecord)
+
+        assert base_properties.items() <= ontology_properties(RasterRecord).items()
+        assert base_properties.items() <= ontology_properties(VectorRecord).items()
+
+    def test_exclusive_fields_belong_to_their_subclass(self):
+        assert ontology_properties(RasterRecord)["resolution_distance"] == (
+            "dcat:spatialResolutionInMeters"
+        )
+        assert ontology_properties(VectorRecord)["character_set"] == (
+            "unr:ideConjuntoCaracteres"
+        )
+        assert "resolution_distance" not in ontology_properties(MetadataRecord)
+        assert "character_set" not in ontology_properties(MetadataRecord)

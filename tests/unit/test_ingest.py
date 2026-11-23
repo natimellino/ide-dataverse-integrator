@@ -9,14 +9,19 @@ from click.testing import CliRunner
 from ide_dataverse_integrator.cli import cli
 from ide_dataverse_integrator.clients.dataverse import DataverseClient
 from ide_dataverse_integrator.clients.geonetwork import GeonetworkClient
-from ide_dataverse_integrator.clients.geoserver import GeoServerClient
+from ide_dataverse_integrator.clients.geoserver import GeoServerClient, LayerInfo
 from ide_dataverse_integrator.models.metadata_diff import MetadataDiff
-from ide_dataverse_integrator.models.metadata_record import MetadataRecord
+from ide_dataverse_integrator.models.metadata_record import (
+    MetadataRecord,
+    RasterRecord,
+    VectorRecord,
+)
 from ide_dataverse_integrator.services import ingest
 from ide_dataverse_integrator.services.ingest import (
     fetch_metadata_record,
     prepare_layer_file,
     publish_to_dataverse,
+    resolve_layer_class,
     sync,
     update_existing_dataset,
 )
@@ -55,12 +60,56 @@ def _http_error(status_code: int, text: str) -> httpx.HTTPStatusError:
     return httpx.HTTPStatusError("error", request=request, response=response)
 
 
+def _geoserver_client_for(layer_type: str):
+    client = create_autospec(GeoServerClient, instance=True)
+    client.layer_type_raster = "RASTER"
+    client.layer_type_vector = "VECTOR"
+    client.get_layer_info.return_value = LayerInfo(
+        qualified_name="ASR:capa", workspace="ASR", bare_name="capa", type=layer_type
+    )
+    return client
+
+
 def test_fetch_metadata_record_merges_geodcat_and_xml(gn_client):
     record = fetch_metadata_record(gn_client, "uuid-1")
 
     assert record.title
+    assert record.geoserver_layer_name
+
+
+def test_fetch_metadata_record_builds_vector_record(gn_client):
+    record = fetch_metadata_record(gn_client, "uuid-1", _geoserver_client_for("VECTOR"))
+
+    assert isinstance(record, VectorRecord)
     # character_set solo viene en el XML ISO 19139
     assert record.character_set == "utf8"
+
+
+def test_fetch_metadata_record_builds_raster_record(gn_client):
+    record = fetch_metadata_record(gn_client, "uuid-1", _geoserver_client_for("RASTER"))
+
+    assert isinstance(record, RasterRecord)
+    assert not hasattr(record, "character_set")
+
+
+class TestResolveLayerClass:
+    def test_raster_layer(self):
+        assert resolve_layer_class("ASR:capa", _geoserver_client_for("RASTER")) is RasterRecord
+
+    def test_vector_layer(self):
+        assert resolve_layer_class("ASR:capa", _geoserver_client_for("VECTOR")) is VectorRecord
+
+    def test_unknown_layer_type_falls_back_to_base(self):
+        assert resolve_layer_class("ASR:capa", _geoserver_client_for("WMS")) is MetadataRecord
+
+    def test_without_layer_does_not_query_geoserver(self):
+        client = _geoserver_client_for("RASTER")
+
+        assert resolve_layer_class(None, client) is MetadataRecord
+        client.get_layer_info.assert_not_called()
+
+    def test_without_client_falls_back_to_base(self):
+        assert resolve_layer_class("ASR:capa", None) is MetadataRecord
 
 
 class TestPublishToDataverse:
@@ -126,7 +175,7 @@ class TestSync:
             sync("uuid-1", sync_deletions=False, dry_run=False)
 
         publish.assert_called_once_with(self.dv_instance, record)
-        self.gs_cls.assert_not_called()
+        self.gs_instance.download_layer.assert_not_called()
         assert PID in capsys.readouterr().out
 
     def test_downloads_layer_when_record_has_layer_name(self, tmp_path, record):
@@ -198,6 +247,7 @@ class TestSyncDryRun:
         ):
             self.dv_instance = dv_cls.return_value
             self.gs_cls = gs_cls
+            self.gs_instance = gs_cls.return_value
             yield
 
     def test_dry_run_shows_plan_for_new(self, capsys, record):
@@ -236,7 +286,7 @@ class TestSyncDryRun:
 
         output = capsys.readouterr().out
         assert "ASR:capa" in output
-        self.gs_cls.assert_not_called()
+        self.gs_instance.download_layer.assert_not_called()
 
 
 def test_cli_sync_dry_run_shows_plan(record):
@@ -348,9 +398,10 @@ class TestSyncUpdateExisting:
             patch.object(ingest, "GeonetworkClient"),
             patch.object(ingest, "fetch_metadata_record", return_value=record),
             patch.object(ingest, "DataverseClient") as dv_cls,
-            patch.object(ingest, "GeoServerClient"),
+            patch.object(ingest, "GeoServerClient") as gs_cls,
         ):
             self.dv_instance = dv_cls.return_value
+            self.gs_instance = gs_cls.return_value
             yield
 
     def test_updates_existing_when_flag_set(self, record):
@@ -367,7 +418,7 @@ class TestSyncUpdateExisting:
                 update_existing=True,
             )
 
-        updater.assert_called_once_with(self.dv_instance, PID, record, None)
+        updater.assert_called_once_with(self.dv_instance, PID, record, self.gs_instance)
 
     def test_without_flag_skips_update(self, record):
         self.dv_instance.find_by_geonetwork_uuid.return_value = PID
@@ -429,3 +480,4 @@ class TestSyncUpdateExisting:
 
         out = capsys.readouterr().out
         assert "campos a actualizar" in out
+

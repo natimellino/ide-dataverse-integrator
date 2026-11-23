@@ -145,3 +145,4 @@ def fill_bridge_metadata(dataset: Dataset, metadata: MetadataRecord):
     bridge.resolution_scale_denominator = metadata.resolution_scale_denominator
     bridge.maintenance_frequency = metadata.maintenance_frequency
     bridge.lineage = metadata.lineage
+    bridge.reference_system = list(metadata.crs)

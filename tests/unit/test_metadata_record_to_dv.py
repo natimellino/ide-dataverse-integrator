@@ -129,6 +129,13 @@ def test_bridge_gets_profile_fields(dataset, record, cfg):
     assert bridge.lineage == "Derivado de COSMO-SkyMed"
 
 
+def test_bridge_gets_reference_systems(dataset, record, cfg):
+    record.crs = ["CRS:84", "EPSG:22185"]
+    fill_dataset_metadata(dataset, record, cfg)
+
+    assert dataset.ideBridge.reference_system == ["CRS:84", "EPSG:22185"]
+
+
 def test_no_keywords_means_no_calls(dataset, record, cfg):
     record.keywords = []
     fill_dataset_metadata(dataset, record, cfg)

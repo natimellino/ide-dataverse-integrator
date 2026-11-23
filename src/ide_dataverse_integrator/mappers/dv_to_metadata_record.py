@@ -112,6 +112,7 @@ def dv_to_metadata_record(dataset: Dataset) -> MetadataRecord:
         ) or "",
         maintenance_frequency=getattr(bridge, "maintenance_frequency", "") or "",
         lineage=getattr(bridge, "lineage", "") or "",
+        crs=list(getattr(bridge, "reference_system", None) or []),
         parent_geonetwork_uuid=bridge.parent_geonetwork_uuid or None,
         geoserver_layer_name=bridge.geoserver_layer_name or None,
         checksum_md5=bridge.checksum_md5 or None,

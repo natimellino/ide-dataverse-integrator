@@ -178,6 +178,10 @@ def _apply_lineage(dataset: Dataset, new_value: str) -> None:
     dataset.ideBridge.lineage = new_value
 
 
+def _apply_reference_system(dataset: Dataset, new_value: list[str]) -> None:
+    dataset.ideBridge.reference_system = new_value
+
+
 def _apply_checksum_md5(dataset: Dataset, new_value: str) -> None:
     dataset.ideBridge.checksum_md5 = new_value
 
@@ -229,6 +233,7 @@ _SYNC_GROUPS: list[_SyncGroup] = [
         _wrap(_apply_maintenance_frequency),
     ),
     _SyncGroup("lineage", lambda r: r.lineage, _wrap(_apply_lineage)),
+    _SyncGroup("crs", lambda r: list(r.crs), _wrap(_apply_reference_system)),
     _SyncGroup(
         "supplemental_information",
         lambda r: r.supplemental_information,

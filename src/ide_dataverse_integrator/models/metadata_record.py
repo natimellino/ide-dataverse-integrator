@@ -1,7 +1,14 @@
 import re
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field, model_validator
+
+ONTOLOGY_PROPERTY_KEY = "ontology_property"
+
+
+def ontology_field(ontology_property: str, **field_kwargs: Any) -> Any:
+    """Declara un campo anotado con la propiedad de la ontología que representa."""
+    return Field(json_schema_extra={ONTOLOGY_PROPERTY_KEY: ontology_property}, **field_kwargs)
 
 
 class Address(BaseModel):
@@ -107,79 +114,65 @@ class SpecificationConformance(BaseModel):
 
 
 class MetadataRecord(BaseModel):
+    """Capa de la IDE (`unr:CapaIDE`).
+
+    Cada campo de dominio declara la propiedad de la ontología que representa.
+    """
+
+    ontology_class: ClassVar[str] = "unr:CapaIDE"
+
     # Identificación (viene del parser)
     id: str
-    # Perfil IDE: Fecha de última actualización
-    modified: str = ""
-    # Perfil IDE: Idioma de los datos
-    language: str = ""
+    modified: str = ontology_field("dct:modified", default="")
+    language: str = ontology_field("dct:language", default="")
     other_languages: list[str] = Field(default_factory=list)
-    character_set: str = ""
-    resource_type: str = ""
+    resource_type: str = ontology_field("dct:type", default="")
 
     # Estándar de metadatos
     metadata_standard_name: str = ""
     metadata_standard_version: str = ""
 
-    # Perfil IDE: título del recurso
-    title: str
+    title: str = ontology_field("dct:title")
     resource_alt_title: str = ""
-    # Perfil IDE: resumen del recurso
-    description: str = ""
-    # Perfil IDE: propósito
-    purpose: str = ""
-    # Perfil IDE: palabras clave
-    keywords: list[str] = Field(default_factory=list)
-    # Perfil IDE: estado del recurso
-    status: str = ""
-    # Perfil IDE: temas del recurso
-    topic_category: str = ""
+    description: str = ontology_field("dct:description", default="")
+    purpose: str = ontology_field("unr:ideProposito", default="")
+    keywords: list[str] = ontology_field("dcat:keyword", default_factory=list)
+    status: str = ontology_field("unr:ideEstadoRecurso", default="")
+    topic_category: str = ontology_field("dcat:theme", default="")
     resource_language: str = ""
-    resource_edition: str = ""
+    resource_edition: str = ontology_field("dcat:version", default="")
     overview_url: str = ""
-    # Perfil IDE: información adicional
-    supplemental_information: str = ""
+    supplemental_information: str = ontology_field("foaf:page", default="")
 
-    # Perfil IDE: fecha de creación del recurso
-    resource_creation_date: str = ""
-    # Perfil IDE: fecha de publicación del recurso
-    resource_publication_date: str = ""
+    resource_creation_date: str = ontology_field("dct:created", default="")
+    resource_publication_date: str = ontology_field("dct:issued", default="")
     resource_revision_date: str = ""
 
-    # Perfil IDE: ID Metadato
-    resource_identifier: str = ""
+    resource_identifier: str = ontology_field("dct:identifier", default="")
 
     # Información espacial
-    crs: list[str] = Field(default_factory=list)
-    # Perfil IDE: extensión geográfica
-    spatial: SpatialInfo | None = None
-    # Perfil IDE: fecha de inicio de la extensión temporal
-    temporal_extent_begin: str = ""
-    # Perfil IDE: fecha de fin de la extensión temporal
-    temporal_extent_end: str = ""
-    # Perfil IDE: escala
-    resolution_scale_denominator: str = ""
-    resolution_distance: str = ""
+    crs: list[str] = ontology_field("dct:conformsTo", default_factory=list)
+    spatial: SpatialInfo | None = ontology_field("dct:spatial", default=None)
+    temporal_extent_begin: str = ontology_field("dct:temporal", default="")
+    temporal_extent_end: str = ontology_field("dct:temporal", default="")
+    resolution_scale_denominator: str = ontology_field("unr:ideEscala", default="")
 
-    # Perfil IDE: frecuencia de mantenimiento
-    maintenance_frequency: str = ""
+    maintenance_frequency: str = ontology_field("dct:accrualPeriodicity", default="")
 
     # Distribución
-    distribution_format_name: str = ""
+    distribution_format_name: str = ontology_field("unr:ideFormatoRecurso", default="")
     distribution_format_version: str = ""
 
     # Restricciones y licencia
     license: str = ""
     use_limitation: str = ""
-    access_constraints: str = ""
+    access_constraints: str = ontology_field("dct:accessRights", default="")
 
-    # Perfil IDE: Linaje
-    lineage: str = ""
+    lineage: str = ontology_field("dct:provenance", default="")
     specification_conformance: list[SpecificationConformance] = Field(default_factory=list)
     process_steps: list[str] = Field(default_factory=list)
 
-    # Perfil IDE: punto de contacto
-    contact: Contact | None = None
+    contact: Contact | None = ontology_field("dcat:contactPoint", default=None)
     author_name: str = ""
     links: list[Link] = Field(default_factory=list)
 
@@ -189,3 +182,31 @@ class MetadataRecord(BaseModel):
     geoserver_layer_name: str | None = None
     checksum_md5: str | None = None
     doi: str | None = None
+
+
+class RasterRecord(MetadataRecord):
+    """Capa ráster de la IDE (`unr:CapaRaster`)."""
+
+    ontology_class: ClassVar[str] = "unr:CapaRaster"
+
+    resolution_distance: str = ontology_field(
+        "dcat:spatialResolutionInMeters", default=""
+    )
+
+
+class VectorRecord(MetadataRecord):
+    """Capa vectorial de la IDE (`unr:CapaVectorial`)."""
+
+    ontology_class: ClassVar[str] = "unr:CapaVectorial"
+
+    character_set: str = ontology_field("unr:ideConjuntoCaracteres", default="")
+
+
+def ontology_properties(model: type[BaseModel]) -> dict[str, str]:
+    """Devuelve, por cada campo anotado, la propiedad de la ontología que representa."""
+    properties = {}
+    for field_name, field_info in model.model_fields.items():
+        extra = field_info.json_schema_extra
+        if isinstance(extra, dict) and ONTOLOGY_PROPERTY_KEY in extra:
+            properties[field_name] = extra[ONTOLOGY_PROPERTY_KEY]
+    return properties

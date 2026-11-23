@@ -21,7 +21,11 @@ from ide_dataverse_integrator.mappers.metadata_record_to_dv import (
     normalize_for_dataverse,
 )
 from ide_dataverse_integrator.models.metadata_diff import MetadataDiff
-from ide_dataverse_integrator.models.metadata_record import MetadataRecord
+from ide_dataverse_integrator.models.metadata_record import (
+    MetadataRecord,
+    RasterRecord,
+    VectorRecord,
+)
 from ide_dataverse_integrator.services.reconciler import reconcile
 from ide_dataverse_integrator.services.updater import (
     apply_diff_to_dataset,
@@ -33,7 +37,11 @@ from ide_dataverse_integrator.utils import compute_md5
 logger = logging.getLogger(__name__)
 
 
-def fetch_metadata_record(gn: GeonetworkClient, uuid: str) -> MetadataRecord:
+def fetch_metadata_record(
+    gn: GeonetworkClient,
+    uuid: str,
+    geoserver_client: GeoServerClient | None = None,
+) -> MetadataRecord:
     """
     Obtiene un record de GeoNetwork y lo convierte a MetadataRecord.
     """
@@ -41,7 +49,27 @@ def fetch_metadata_record(gn: GeonetworkClient, uuid: str) -> MetadataRecord:
     # Priorizamos extraer de GeoDCAT-AP porque es más simple pero
     # completamos con XML todos los metadatos que falten.
     extras = parse_iso19139_extras(gn.get_record(uuid, format="xml"))
-    return merge_iso19139_extras(record, extras)
+    record_class = resolve_layer_class(
+        extras.get("geoserver_layer_name"), geoserver_client
+    )
+    return merge_iso19139_extras(record, extras, record_class)
+
+
+def resolve_layer_class(
+    layer_name: str | None,
+    geoserver_client: GeoServerClient | None,
+) -> type[MetadataRecord]:
+    """Elige la clase del record según el tipo de la capa en GeoServer."""
+    if not layer_name or geoserver_client is None:
+        return MetadataRecord
+
+    layer_info = geoserver_client.get_layer_info(layer_name)
+    if layer_info.type == geoserver_client.layer_type_raster:
+        return RasterRecord
+    if layer_info.type == geoserver_client.layer_type_vector:
+        return VectorRecord
+    logger.warning("Tipo de capa desconocido para %s: %s", layer_name, layer_info.type)
+    return MetadataRecord
 
 
 def prepare_layer_file(
@@ -208,7 +236,9 @@ def _compute_update_diffs(
     """Calcula los diffs de los existentes sin aplicarlos (para dry-run)."""
     diffs: dict[str, MetadataDiff] = {}
     for uuid, pid in existing.items():
-        gn_record = discovered_records.get(uuid) or fetch_metadata_record(gn, uuid)
+        gn_record = discovered_records.get(uuid) or fetch_metadata_record(
+            gn, uuid, geoserver_client
+        )
         _refresh_layer_checksum(geoserver_client, gn_record)
         dataset = dv.load_dataset(pid)
         dv_record = dv_to_metadata_record(dataset)
@@ -227,8 +257,10 @@ def sync(
 
     gn = GeonetworkClient()
     dv = DataverseClient()
+    # GeoServer sólo se consulta si el record tiene una capa asociada.
+    geoserver_client = GeoServerClient()
 
-    record = fetch_metadata_record(gn, uuid)
+    record = fetch_metadata_record(gn, uuid, geoserver_client)
 
     # Por ahora cada UUID se trata como capa única (no tenemos parent records
     # implementados en Geonetwork)
@@ -238,21 +270,18 @@ def sync(
     if dry_run:
         diffs: dict[str, MetadataDiff] | None = None
         if update_existing and plan.existing:
-            dry_geoserver = GeoServerClient() if record.geoserver_layer_name else None
             diffs = _compute_update_diffs(
-                dv, plan.existing, {uuid: record}, gn, dry_geoserver
+                dv, plan.existing, {uuid: record}, gn, geoserver_client
             )
         _print_plan(plan, {uuid: record}, diffs)
         return
 
-    # El cliente de GeoServer sólo se instancia si algún record
-    # tiene una capa.
-    geoserver_client: GeoServerClient | None = None
-
     for new_uuid in plan.to_create:
-        rec = record if new_uuid == uuid else fetch_metadata_record(gn, new_uuid)
-        if rec.geoserver_layer_name and geoserver_client is None:
-            geoserver_client = GeoServerClient()
+        rec = (
+            record
+            if new_uuid == uuid
+            else fetch_metadata_record(gn, new_uuid, geoserver_client)
+        )
         try:
             pid = _publish_with_optional_layer(dv, geoserver_client, rec)
         except httpx.HTTPStatusError as e:
@@ -266,10 +295,10 @@ def sync(
             logger.info("UUID %s ya existe (%s), se omite", existing_uuid, pid)
             continue
         rec = (
-            record if existing_uuid == uuid else fetch_metadata_record(gn, existing_uuid)
+            record
+            if existing_uuid == uuid
+            else fetch_metadata_record(gn, existing_uuid, geoserver_client)
         )
-        if rec.geoserver_layer_name and geoserver_client is None:
-            geoserver_client = GeoServerClient()
         try:
             diff = update_existing_dataset(dv, pid, rec, geoserver_client)
         except httpx.HTTPStatusError as e:

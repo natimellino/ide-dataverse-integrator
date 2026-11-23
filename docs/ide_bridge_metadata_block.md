@@ -18,10 +18,12 @@ identificar registros ya sincronizados y mantener la conciliación.
 | `resolutionScaleDenominator` | Escala | Denominador de la escala equivalente (ej: 50000 para 1:50000) | No | No |
 | `maintenanceFrequency` | Frecuencia de mantenimiento | Frecuencia de actualización del recurso (ej: `asNeeded`, `annually`) | No | No |
 | `lineage` | Linaje | Descripción del linaje o genealogía de los datos (`textbox`) | No | No |
+| `referenceSystem` | Sistema de referencia | Sistemas de referencia de coordenadas de la capa (ej: `EPSG:22185`). Admite múltiples valores | Sí | Sí |
 
 `geonetworkUuid` y `parentGeonetworkUuid` son facetables y buscables para
 que la Search API de Dataverse pueda filtrar por ellos durante la fase de
-conciliación.
+conciliación. `referenceSystem` es facetable y buscable para que las capas
+puedan descubrirse por su sistema de referencia.
 
 ## Instalación en Dataverse (Docker)
 

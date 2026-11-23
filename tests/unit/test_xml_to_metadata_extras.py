@@ -20,7 +20,10 @@ from ide_dataverse_integrator.mappers.gn_xml_to_metadata_record import (
     merge_iso19139_extras,
     parse_iso19139_extras,
 )
-from ide_dataverse_integrator.models.metadata_record import MetadataRecord
+from ide_dataverse_integrator.models.metadata_record import (
+    MetadataRecord,
+    VectorRecord,
+)
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 
@@ -925,8 +928,17 @@ class TestMergeIso19139Extras:
         )
 
     def test_fills_empty_fields(self, record):
-        merged = merge_iso19139_extras(record, {"character_set": "utf8"})
+        merged = merge_iso19139_extras(record, {"lineage": "Linaje XML"})
+        assert merged.lineage == "Linaje XML"
+
+    def test_builds_requested_record_class(self, record):
+        merged = merge_iso19139_extras(record, {"character_set": "utf8"}, VectorRecord)
+        assert isinstance(merged, VectorRecord)
         assert merged.character_set == "utf8"
+
+    def test_drops_fields_exclusive_to_other_class(self, record):
+        merged = merge_iso19139_extras(record, {"character_set": "utf8"})
+        assert not hasattr(merged, "character_set")
 
     def test_does_not_override_fields_with_value(self, record):
         merged = merge_iso19139_extras(record, {"status": "completed", "title": "Otro"})

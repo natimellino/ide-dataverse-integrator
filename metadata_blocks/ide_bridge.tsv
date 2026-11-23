@@ -11,3 +11,4 @@
 	resolutionScaleDenominator	Escala	Denominador de la escala equivalente (ej: 50000 para una escala 1:50000).		text	7		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
 	maintenanceFrequency	Frecuencia de mantenimiento	Frecuencia de actualización del recurso (ej: asNeeded, annually).		text	8		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
 	lineage	Linaje	Descripción del linaje o genealogía de los datos.		textbox	9		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	referenceSystem	Sistema de referencia	Sistemas de referencia de coordenadas de la capa (ej: EPSG:22185).		text	10		TRUE	FALSE	TRUE	TRUE	FALSE	FALSE		ideBridge

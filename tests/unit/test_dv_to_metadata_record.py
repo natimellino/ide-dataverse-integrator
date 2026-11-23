@@ -163,3 +163,21 @@ class TestDvToMetadataRecord:
         assert record.parent_geonetwork_uuid is None
         assert record.geoserver_layer_name is None
         assert record.checksum_md5 is None
+
+    def test_reads_reference_systems_from_bridge(self):
+        citation = SimpleNamespace(
+            title="t",
+            ds_description=[],
+            keyword=[],
+            notes_text="",
+            production_date="",
+            date_of_deposit="",
+            time_period_covered=[],
+            dataset_contact=[],
+        )
+        bridge = _bridge(geonetwork_uuid="x", reference_system=["CRS:84", "EPSG:22185"])
+        dataset = _make_dataset(citation=citation, bridge=bridge)
+
+        record = dv_to_metadata_record(dataset)
+
+        assert record.crs == ["CRS:84", "EPSG:22185"]
