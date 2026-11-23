@@ -4,11 +4,12 @@
 	geonetworkUuid	GeoNetwork UUID	UUID del registro original en GeoNetwork. Clave de sincronización.		text	0		TRUE	FALSE	FALSE	TRUE	FALSE	FALSE		ideBridge
 	parentGeonetworkUuid	Parent GeoNetwork UUID	UUID del registro padre al que pertenece esta capa en GeoNetwork.		text	1		TRUE	FALSE	FALSE	TRUE	FALSE	FALSE		ideBridge
 	geoserverLayerName	GeoServer Layer Name	Nombre calificado de la capa en GeoServer (workspace:layer).		text	2		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	checksumMd5	Checksum MD5	Hash MD5 del archivo de datos para control de integridad.		text	3		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	modified	Fecha de última actualización	Fecha de la última actualización del metadato en GeoNetwork.		text	4		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	status	Estado del recurso	Estado del recurso según el Perfil IDE (ej: completed, onGoing).		text	5		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	purpose	Propósito	Propósito o justificación de la creación del recurso.		textbox	6		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	resolutionScaleDenominator	Escala	Denominador de la escala equivalente (ej: 50000 para una escala 1:50000).		text	7		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	maintenanceFrequency	Frecuencia de mantenimiento	Frecuencia de actualización del recurso (ej: asNeeded, annually).		text	8		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	lineage	Linaje	Descripción del linaje o genealogía de los datos.		textbox	9		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
-	referenceSystem	Sistema de referencia	Sistemas de referencia de coordenadas de la capa (ej: EPSG:22185).		text	10		TRUE	FALSE	TRUE	TRUE	FALSE	FALSE		ideBridge
+	geonetworkRecordUrl	GeoNetwork Record URL	URL de la ficha del registro de la capa en el catálogo de GeoNetwork.		text	3	<a href="#VALUE" target="_blank" rel="noopener">#VALUE</a>	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	checksumMd5	Checksum MD5	Hash MD5 del archivo de datos para control de integridad.		text	4		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	modified	Fecha de última actualización	Fecha de la última actualización del metadato en GeoNetwork.		text	5		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	status	Estado del recurso	Estado del recurso según el Perfil IDE (ej: completed, onGoing).		text	6		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	purpose	Propósito	Propósito o justificación de la creación del recurso.		textbox	7		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	resolutionScaleDenominator	Escala	Denominador de la escala equivalente (ej: 50000 para una escala 1:50000).		text	8		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	maintenanceFrequency	Frecuencia de mantenimiento	Frecuencia de actualización del recurso (ej: asNeeded, annually).		text	9		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	lineage	Linaje	Descripción del linaje o genealogía de los datos.		textbox	10		FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		ideBridge
+	referenceSystem	Sistema de referencia	Sistemas de referencia de coordenadas de la capa (ej: EPSG:22185).		text	11		TRUE	FALSE	TRUE	TRUE	FALSE	FALSE		ideBridge

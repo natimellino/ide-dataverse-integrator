@@ -108,6 +108,7 @@
   "parent_geonetwork_uuid": null,
   "is_parent": false,
   "geoserver_layer_name": null,
+  "geonetwork_record_url": null,
   "checksum_md5": null,
   "doi": null
 }

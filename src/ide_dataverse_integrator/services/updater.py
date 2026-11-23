@@ -154,6 +154,10 @@ def _apply_geoserver_layer(dataset: Dataset, new_value: str) -> None:
     dataset.ideBridge.geoserver_layer_name = new_value
 
 
+def _apply_geonetwork_record_url(dataset: Dataset, new_value: str) -> None:
+    dataset.ideBridge.geonetwork_record_url = new_value
+
+
 def _apply_modified(dataset: Dataset, new_value: str) -> None:
     dataset.ideBridge.modified = new_value
 
@@ -262,6 +266,11 @@ _SYNC_GROUPS: list[_SyncGroup] = [
         "geoserver_layer_name",
         lambda r: r.geoserver_layer_name or "",
         _wrap(_apply_geoserver_layer),
+    ),
+    _SyncGroup(
+        "geonetwork_record_url",
+        lambda r: r.geonetwork_record_url or "",
+        _wrap(_apply_geonetwork_record_url),
     ),
 ]
 

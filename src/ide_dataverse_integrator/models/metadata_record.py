@@ -180,6 +180,7 @@ class MetadataRecord(BaseModel):
     parent_geonetwork_uuid: str | None = None
     is_parent: bool = False
     geoserver_layer_name: str | None = None
+    geonetwork_record_url: str | None = None
     checksum_md5: str | None = None
     doi: str | None = None
 

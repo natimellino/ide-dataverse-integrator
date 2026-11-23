@@ -34,6 +34,13 @@ def test_get_record_uses_geodcat_by_default(client):
     assert client.get_record("uuid-1") == "<rdf/>"
 
 
+def test_record_url_points_to_catalog_page(client):
+    assert (
+        client.record_url("uuid-1")
+        == "http://gn.test/geonetwork/srv/spa/catalog.search#/metadata/uuid-1"
+    )
+
+
 @responses.activate
 def test_get_record_with_format(client):
     responses.get(f"{RECORD_URL}/xml", body="<xml/>")

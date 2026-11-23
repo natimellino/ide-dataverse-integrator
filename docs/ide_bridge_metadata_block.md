@@ -11,6 +11,7 @@ identificar registros ya sincronizados y mantener la conciliación.
 | `geonetworkUuid` | GeoNetwork UUID | UUID del registro original en GeoNetwork | Sí | Sí |
 | `parentGeonetworkUuid` | Parent GeoNetwork UUID | UUID del padre (permite reconstruir la jerarquía) | Sí | Sí |
 | `geoserverLayerName` | GeoServer Layer Name | Nombre calificado de la capa en GeoServer | No | No |
+| `geonetworkRecordUrl` | GeoNetwork Record URL | URL de la ficha del registro en el catálogo de GeoNetwork (se muestra como enlace) | No | No |
 | `checksumMd5` | Checksum MD5 | Hash MD5 del archivo de datos | No | No |
 | `modified` | Fecha de última actualización | Fecha de la última actualización del metadato en GeoNetwork | No | No |
 | `status` | Estado del recurso | Estado del recurso según el Perfil IDE (ej: `completed`, `onGoing`) | No | No |

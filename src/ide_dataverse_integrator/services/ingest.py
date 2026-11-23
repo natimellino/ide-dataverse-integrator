@@ -52,7 +52,9 @@ def fetch_metadata_record(
     record_class = resolve_layer_class(
         extras.get("geoserver_layer_name"), geoserver_client
     )
-    return merge_iso19139_extras(record, extras, record_class)
+    merged_record = merge_iso19139_extras(record, extras, record_class)
+    merged_record.geonetwork_record_url = gn.record_url(uuid)
+    return merged_record
 
 
 def resolve_layer_class(

@@ -137,6 +137,7 @@ def fill_bridge_metadata(dataset: Dataset, metadata: MetadataRecord):
     bridge.geonetwork_uuid = metadata.id
     bridge.parent_geonetwork_uuid = metadata.parent_geonetwork_uuid or ""
     bridge.geoserver_layer_name = metadata.geoserver_layer_name or ""
+    bridge.geonetwork_record_url = metadata.geonetwork_record_url or ""
     bridge.checksum_md5 = metadata.checksum_md5 or ""
 
     bridge.modified = metadata.modified

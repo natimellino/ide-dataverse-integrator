@@ -115,5 +115,6 @@ def dv_to_metadata_record(dataset: Dataset) -> MetadataRecord:
         crs=list(getattr(bridge, "reference_system", None) or []),
         parent_geonetwork_uuid=bridge.parent_geonetwork_uuid or None,
         geoserver_layer_name=bridge.geoserver_layer_name or None,
+        geonetwork_record_url=getattr(bridge, "geonetwork_record_url", None) or None,
         checksum_md5=bridge.checksum_md5 or None,
     )

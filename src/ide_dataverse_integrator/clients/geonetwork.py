@@ -12,6 +12,10 @@ class GeonetworkClient:
         self.verify_certs = cfg.geonetwork_verify_certs
         self.timeout = cfg.geonetwork_timeout
 
+    def record_url(self, uuid: str) -> str:
+        """URL de la ficha pública del registro en el catálogo."""
+        return f"{self.server_url}/srv/spa/catalog.search#/metadata/{uuid}"
+
     def get_record(self, uuid: str, format: str = "eu-geodcat-ap-semiceu") -> str:
         """Devuelve los metadatos de un registro en el formato indicado."""
         url = f"{self.server_url}/srv/api/records/{uuid}/formatters/{format}"

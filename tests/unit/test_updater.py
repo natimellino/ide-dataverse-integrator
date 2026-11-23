@@ -171,6 +171,14 @@ class TestDiffRecords:
 
         assert "geoserver_layer_name" in diff.changed_fields
 
+    def test_geonetwork_record_url_change_detected(self):
+        gn = _record(geonetwork_record_url="https://gn/srv/spa/catalog.search#/metadata/uuid-1")
+        dv = _record(geonetwork_record_url=None)
+
+        diff = diff_records(gn, dv)
+
+        assert "geonetwork_record_url" in diff.changed_fields
+
     def test_symmetric_direction(self):
         """La API es direccionalmente simétrica (M8 invierte source/target)."""
         a = _record(title="A")
@@ -330,6 +338,7 @@ class TestApplyDiffToDataset:
             changed_fields={
                 "parent_geonetwork_uuid": ("", "parent-new"),
                 "geoserver_layer_name": ("", "ws:capa"),
+                "geonetwork_record_url": ("", "https://gn/ficha"),
             }
         )
 
@@ -337,6 +346,7 @@ class TestApplyDiffToDataset:
 
         assert dataset.ideBridge.parent_geonetwork_uuid == "parent-new"
         assert dataset.ideBridge.geoserver_layer_name == "ws:capa"
+        assert dataset.ideBridge.geonetwork_record_url == "https://gn/ficha"
 
     def test_profile_bridge_fields_assigned_directly(self, cfg):
         dataset = self._dataset()
